@@ -1,26 +1,102 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
+import { allGenerators } from './generate/index';
+import * as path from 'path';
+import * as fs from 'fs';
+import axios from 'axios';
+import AdmZip = require('adm-zip');
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
-export function activate(context: vscode.ExtensionContext) {
+export async function activate(context: vscode.ExtensionContext) {
+    const workspaceFolders = vscode.workspace.workspaceFolders;
+    if (workspaceFolders) {
+        const rootPath = workspaceFolders[0].uri.fsPath;
+        const markerPath = path.join(rootPath, '.vsc_success');
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "project-generator" is now active!');
+        if (fs.existsSync(markerPath)) {
+            const projectName = fs.readFileSync(markerPath, 'utf8');
+            vscode.window.showInformationMessage(`Project '${projectName}' generated successfully!`);
+            fs.unlinkSync(markerPath);
+        }
+    }
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	const disposable = vscode.commands.registerCommand('project-generator.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from project-generator!');
-	});
+    const storagePath = context.globalStorageUri.fsPath;
+    const templateFolder = path.join(storagePath, 'project-template');
 
-	context.subscriptions.push(disposable);
+    const folderExists = fs.existsSync(templateFolder);
+    if (!folderExists) {
+        await context.globalState.update('templatesDownloaded', false); 
+        await downloadTemplates(context);
+    }
+
+    const newProject = vscode.commands.registerCommand('project-generator.newProject', async () => {
+        const selectedGenerator = await vscode.window.showQuickPick(allGenerators, {
+            placeHolder: 'Select a programming language to start',
+            ignoreFocusOut: true
+        });
+
+        if (selectedGenerator) {
+            await selectedGenerator.createProject(context);
+        }
+    });
+
+    const updateTemplates = vscode.commands.registerCommand('project-generator.updateTemplates', async () => {
+        await downloadTemplates(context);
+    });
+
+    context.subscriptions.push(newProject, updateTemplates);
 }
 
-// This method is called when your extension is deactivated
+async function downloadTemplates(context: vscode.ExtensionContext) {
+    const storageUri = context.globalStorageUri;
+    const storagePath = storageUri.fsPath;
+    const zipFilePath = path.join(storagePath, 'project-template.zip');
+    
+    const finalTemplateFolder = path.join(storagePath, 'project-template');
+    const extractedFolderName = 'project-template-main'; 
+    const extractedPath = path.join(storagePath, extractedFolderName);
+
+    const repoUrl = "https://github.com/daivuducit/project-template/archive/refs/heads/main.zip";
+
+    try {
+        await vscode.workspace.fs.createDirectory(storageUri);
+
+        await vscode.window.withProgress({
+            location: vscode.ProgressLocation.Notification,
+            title: "Project Generator",
+            cancellable: false
+        }, async (progress) => {
+            progress.report({ message: "Downloading templates from GitHub..." });
+            
+            const response = await axios({
+                method: 'get',
+                url: repoUrl,
+                responseType: 'arraybuffer'
+            });
+
+            fs.writeFileSync(zipFilePath, response.data);
+
+            progress.report({ message: "Extracting files to local storage..." });
+            const zip = new AdmZip(zipFilePath);
+            
+            zip.extractAllTo(storagePath, true);
+
+            if (fs.existsSync(finalTemplateFolder)) {
+                fs.rmSync(finalTemplateFolder, { recursive: true, force: true });
+            }
+
+            if (fs.existsSync(extractedPath)) {
+                fs.renameSync(extractedPath, finalTemplateFolder);
+            }
+
+            if (fs.existsSync(zipFilePath)) {
+                fs.unlinkSync(zipFilePath);
+            }
+
+            await context.globalState.update('templatesDownloaded', true);
+            vscode.window.showInformationMessage("Templates storage updated successfully!");
+        });
+    } catch (error: any) {
+        vscode.window.showErrorMessage(`Update failed: ${error.message}`);
+    }
+}
+
 export function deactivate() {}

@@ -1,7 +1,8 @@
 {
   "name": "project-generator",
-  "displayName": "project-generator",
-  "description": "",
+  "displayName": "Project Generator",
+  "publisher": "f-vscode",
+  "description": "Tools for generate any templates code",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.108.1"
@@ -9,13 +10,26 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onStartupFinished",
+    "workspaceContains:.vsc_success"
+  ],
+  "extensionDependencies": [
+    "vscjava.vscode-spring-initializr",
+    "vscjava.vscode-java-pack",
+    "vmware.vscode-boot-dev-pack"
+  ],
+  "reccommendations": [],
   "main": "./dist/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "project-generator.helloWorld",
-        "title": "Hello World"
+        "command": "project-generator.newProject",
+        "title": "Project Generator: New Project..."
+      },
+      {
+        "command": "project-generator.updateTemplates",
+        "title": "Project Generator: Update Templates Storage"
       }
     ]
   },
@@ -34,15 +48,20 @@
     "test": "vscode-test"
   },
   "devDependencies": {
-    "@types/vscode": "^1.108.1",
+    "@types/adm-zip": "^0.5.7",
     "@types/mocha": "^10.0.10",
     "@types/node": "22.x",
-    "typescript-eslint": "^8.52.0",
-    "eslint": "^9.39.2",
+    "@types/vscode": "^1.108.1",
+    "@vscode/test-cli": "^0.0.12",
+    "@vscode/test-electron": "^2.5.2",
     "esbuild": "^0.27.2",
+    "eslint": "^9.39.2",
     "npm-run-all": "^4.1.5",
     "typescript": "^5.9.3",
-    "@vscode/test-cli": "^0.0.12",
-    "@vscode/test-electron": "^2.5.2"
+    "typescript-eslint": "^8.52.0"
+  },
+  "dependencies": {
+    "adm-zip": "^0.5.16",
+    "axios": "^1.13.2"
   }
 }
