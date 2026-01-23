@@ -138,6 +138,7 @@ export class PythonGenerator implements ProjectGenerator {
                                 `github_username="${githubUsername}" ` +
                                 `version="${version}" ` +
                                 `python_version="${detectedVersion}" ` +
+                                `actual_python_path="${interpreterPath}" ` +
                                 `license="${license}" ` +
                                 `use_docker="${useDocker}"`;
                 
@@ -147,12 +148,16 @@ export class PythonGenerator implements ProjectGenerator {
                 if (!fs.existsSync(vscodeFolder)) {
                     fs.mkdirSync(vscodeFolder, { recursive: true });
                 }
+                const relativeInterpreterPath = process.platform === 'win32' 
+                    ? ".venv/Scripts/python.exe" 
+                    : ".venv/bin/python";
 
                 const settings = {
-                    "python.defaultInterpreterPath": interpreterPath,
-                    "python.terminal.activateEnvInCurrentTerminal": false,
+                    "python.defaultInterpreterPath": relativeInterpreterPath,
+                    "python.terminal.activateEnvInCurrentTerminal": true,
                     "python.testing.pytestEnabled": true,
-                    "python.testing.unittestEnabled": false
+                    "python.testing.unittestEnabled": false,
+                    "python.analysis.extraPaths": ["./src"]
                 };
 
                 fs.writeFileSync(path.join(vscodeFolder, 'settings.json'), JSON.stringify(settings, null, 4));
