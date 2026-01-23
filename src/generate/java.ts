@@ -121,9 +121,9 @@ export class JavaGenerator implements ProjectGenerator {
             }
 
             const outputDir = targetFolder[0].fsPath;
-            // const projectName = inputs.project_name || inputs.name || 'java-project';
-            // const projectSlug = projectName.toLowerCase().replace(/ /g, '-').replace(/_/g, '-');
-            const projectPath = path.join(outputDir, inputs.projectSlug);
+            const projectName = inputs.project_name || inputs.name || 'java-project';
+            const projectSlug = projectName.toLowerCase().replace(/ /g, '-').replace(/_/g, '-');
+            const projectPath = path.join(outputDir, projectSlug);
 
             // Generate the project using cookiecutter
             await vscode.window.withProgress({
@@ -148,7 +148,7 @@ export class JavaGenerator implements ProjectGenerator {
             // Check if project was created successfully and open it
             if (fs.existsSync(projectPath)) {
                 const markerFile = path.join(projectPath, '.vsc_success');
-                fs.writeFileSync(markerFile, inputs.projectName);
+                fs.writeFileSync(markerFile, projectName);
 
                 vscode.commands.executeCommand('vscode.openFolder', vscode.Uri.file(projectPath), false); 
             }
