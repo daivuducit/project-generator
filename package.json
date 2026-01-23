@@ -31,7 +31,20 @@
         "command": "project-generator.updateTemplates",
         "title": "Project Generator: Update Templates Storage"
       }
-    ]
+    ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "project-generator.newProject"
+        }
+      ],
+      "explorer/context": [
+        {
+          "command": "project-generator.newProject",
+          "group": "navigation"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run package",
