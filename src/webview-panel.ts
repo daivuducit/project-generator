@@ -96,7 +96,15 @@ export class ProjectGeneratorPanel {
       if (language === "C") {
         await this._generateCProject(formData, outputDir, context);
       } else if (language === "Java") {
-        await this._generateJavaProject(formData, outputDir, context);
+        if (formData.course === "PRO192") {
+          await this._generatePRO192Project(formData, outputDir, context);
+          return;
+        }
+
+        if (formData.course === "PRJ301") {
+          await this._generatePRJ301Project(formData, outputDir, context);
+          return;
+        }
       } else if (language === "Python") {
         await this._generatePythonProject(formData, outputDir, context);
       }
@@ -210,11 +218,13 @@ export class ProjectGeneratorPanel {
   }
 
   // JAVA PROJECT GENERATOR
-  private async _generateJavaProject(
+  private async _generatePRO192Project(
     formData: any,
     outputDir: string,
     context: vscode.ExtensionContext,
   ) {
+    const fs = require("fs");
+    const path = require("path");
     const { exec } = require("child_process");
     const { promisify } = require("util");
     const execPromise = promisify(exec);
@@ -223,210 +233,117 @@ export class ProjectGeneratorPanel {
       context.globalStorageUri.fsPath,
       "project-template",
       "java",
+      "maven",
+      "PRO192-template",
     );
 
-    try {
-      if (!fs.existsSync(templatePath)) {
-        this.showMessage(
-          "Java templates not found. Please update templates first.",
-          true,
-        );
-        return;
-      }
-
-      let finalTemplatePath: string;
-
-      if (formData.course === "PRO192") {
-        finalTemplatePath = path.join(templatePath, "maven", "PRO192-template");
-      } else if (formData.course === "PRJ301") {
-        finalTemplatePath = path.join(templatePath, "maven", "PRJ301-template");
-      } else {
-        this.showMessage(`Unknown course: ${formData.course}`, true);
-        return;
-      }
-
-      // Verify cookiecutter.json exists
-      const cookiecutterPath = path.join(
-        finalTemplatePath,
-        "cookiecutter.json",
-      );
-      if (!fs.existsSync(cookiecutterPath)) {
-        this.showMessage(
-          `Template not found at: ${finalTemplatePath}\n\nPlease check:\n1. Template structure is correct\n2. Update templates from repository`,
-          true,
-        );
-        return;
-      }
-
-      console.log("Using template path:", finalTemplatePath);
-
-      // Parse cookiecutter.json and build INPUTS
-      const cookiecutterConfig = JSON.parse(
-        fs.readFileSync(cookiecutterPath, "utf8"),
-      );
-
-      const inputs: { [key: string]: string } = {};
-
-      // Collect inputs from cookiecutter.json
-      for (const [key, defaultValue] of Object.entries(cookiecutterConfig)) {
-        // Skip cookiecutter internal keys
-        if (
-          key === "_extensions" ||
-          key === "_templates" ||
-          key === "_copy_without_render"
-        ) {
-          continue;
-        }
-
-        // Skip fields with template expressions
-        if (
-          typeof defaultValue === "string" &&
-          defaultValue.startsWith("{{") &&
-          defaultValue.endsWith("}}")
-        ) {
-          continue;
-        }
-
-        let inputValue: string;
-
-        const formFieldMap: { [key: string]: string } = {
-          project_name: formData.projectName,
-          name: formData.projectName,
-
-          author: formData.author || "Your Name",
-          github_username: formData.github || "your-github",
-
-          // Build system
-          build_system: formData.buildSystem,
-
-          java_version: formData.javaVersion,
-          jdk_version: formData.javaVersion,
-          jdk: formData.javaVersion,
-
-          main_filename: formData.mainClassName || "Main",
-
-          main_servlet_name: formData.mainClassName || "MainServlet",
-          main_class_name: formData.mainClassName || "Main",
-          main_class: formData.mainClassName || "Main",
-
-          group_id: "com.example",
-          artifact_id:
-            formData.projectName?.toLowerCase().replace(/[^a-z0-9]/g, "") ||
-            "myproject",
-
-          server: formData.server,
-          application_server: formData.server,
-          database: formData.database,
-          mvc_pattern: formData.mvc,
-          mvc: formData.mvc,
-          jstl: formData.jstl ? "y" : "n",
-          include_jstl: formData.jstl ? "y" : "n",
-
-          language: "Java",
-          add_sample_code: formData.addSampleCode ? "y" : "n",
-          course: formData.course,
-        };
-
-        if (formFieldMap[key] !== undefined) {
-          inputValue = formFieldMap[key];
-        } else if (Array.isArray(defaultValue)) {
-          inputValue = defaultValue[0] as string;
-        } else {
-          inputValue = String(defaultValue);
-        }
-
-        inputs[key] = inputValue;
-      }
-
-      // Verify project name
-      const projectName = inputs.project_name || inputs.name || "java-project";
-      const projectSlug = projectName
-        .toLowerCase()
-        .replace(/ /g, "-")
-        .replace(/_/g, "-");
-      const projectPath = path.join(outputDir, projectSlug);
-
-      console.log("📋 Cookiecutter inputs:", inputs); // Debug log
-
-      // Run cookiecutter
-      await vscode.window.withProgress(
-        {
-          location: vscode.ProgressLocation.Notification,
-          title: `Generating ${formData.course} Project...`,
-          cancellable: false,
-        },
-        async (progress) => {
-          progress.report({ message: "Running template engine..." });
-
-          // Build cookiecutter command with all inputs
-          let command = `cookiecutter "${finalTemplatePath}" --no-input -o "${outputDir}"`;
-
-          for (const [key, value] of Object.entries(inputs)) {
-            command += ` ${key}="${value}"`;
-          }
-
-          console.log("Cookiecutter command:", command); // Debug log
-
-          await execPromise(command);
-
-          progress.report({ message: "Project generated successfully!" });
-        },
-      );
-
-      // Open PROJECT
-      if (fs.existsSync(projectPath)) {
-        const markerFile = path.join(projectPath, ".vsc_success");
-        fs.writeFileSync(markerFile, projectName);
-
-        await vscode.commands.executeCommand(
-          "vscode.openFolder",
-          vscode.Uri.file(projectPath),
-          false,
-        );
-      } else {
-        // Debug: Check what folders were created
-        console.error("Project path not found:", projectPath);
-        const outputDirContents = fs
-          .readdirSync(outputDir, { withFileTypes: true })
-          .filter((item) => item.isDirectory())
-          .map((item) => item.name);
-        console.error("Folders in output directory:", outputDirContents);
-
-        // Try to find and open the created folder
-        if (outputDirContents.length > 0) {
-          // Find the most recently created folder
-          const folders = outputDirContents
-            .map((name) => ({
-              name,
-              path: path.join(outputDir, name),
-              stats: fs.statSync(path.join(outputDir, name)),
-            }))
-            .sort((a, b) => b.stats.mtimeMs - a.stats.mtimeMs);
-
-          const recentFolder = folders[0];
-          console.log("Opening most recent folder:", recentFolder.name);
-
-          const markerFile = path.join(recentFolder.path, ".vsc_success");
-          fs.writeFileSync(markerFile, projectName);
-
-          await vscode.commands.executeCommand(
-            "vscode.openFolder",
-            vscode.Uri.file(recentFolder.path),
-            false,
-          );
-        } else {
-          this.showMessage(
-            "Project created but could not find the output folder.",
-            true,
-          );
-        }
-      }
-    } catch (error: any) {
-      console.error("Full error:", error); // Debug log
-      this.showMessage(`Java Project Generation Error: ${error.message}`, true);
-      throw error;
+    if (!fs.existsSync(templatePath)) {
+      this.showMessage("PRO192 template not found.", true);
+      return;
     }
+
+    // MAIN CLASS ĐỔI ĐƯỢC
+    const inputs = {
+      project_name: formData.projectName,
+      group_id: "com.mycompany",
+
+      main_class: formData.mainClassName || "Main",
+      main_class_name: formData.mainClassName || "Main",
+      main_filename: formData.mainClassName || "Main",
+    };
+
+    let command = `cookiecutter "${templatePath}" --no-input -o "${outputDir}"`;
+
+    for (const [key, value] of Object.entries(inputs)) {
+      command += ` ${key}="${value}"`;
+    }
+
+    console.log("PRO192 cookiecutter command:", command);
+    await execPromise(command);
+
+    const dirs = fs
+      .readdirSync(outputDir, { withFileTypes: true })
+      .filter((d: any) => d.isDirectory())
+      .map((d: any) => ({
+        name: d.name,
+        path: path.join(outputDir, d.name),
+        time: fs.statSync(path.join(outputDir, d.name)).mtimeMs,
+      }))
+      .sort((a: any, b: any) => b.time - a.time);
+
+    if (dirs.length === 0) {
+      this.showMessage("PRO192 created but folder not found.", true);
+      return;
+    }
+
+    await vscode.commands.executeCommand(
+      "vscode.openFolder",
+      vscode.Uri.file(dirs[0].path),
+      false,
+    );
   }
+  private async _generatePRJ301Project(
+    formData: any,
+    outputDir: string,
+    context: vscode.ExtensionContext,
+  ) {
+    const fs = require("fs");
+    const path = require("path");
+    const { exec } = require("child_process");
+    const { promisify } = require("util");
+    const execPromise = promisify(exec);
+
+    const templatePath = path.join(
+      context.globalStorageUri.fsPath,
+      "project-template",
+      "java",
+      "maven",
+      "PRJ301-template",
+    );
+
+    if (!fs.existsSync(templatePath)) {
+      this.showMessage("PRJ301 template not found.", true);
+      return;
+    }
+
+    const inputs = {
+      project_name: formData.projectName,
+      group_id: "com.mycompany",
+      main_servlet_name: formData.mainClassName || "MainServlet",
+      context_path: formData.projectName,
+    };
+
+    let command = `cookiecutter "${templatePath}" --no-input -o "${outputDir}"`;
+
+    for (const [key, value] of Object.entries(inputs)) {
+      command += ` ${key}="${value}"`;
+    }
+
+    console.log("PRJ301 cookiecutter command:", command);
+    await execPromise(command);
+
+    const dirs = fs
+      .readdirSync(outputDir, { withFileTypes: true })
+      .filter((d: any) => d.isDirectory())
+      .map((d: any) => ({
+        name: d.name,
+        path: path.join(outputDir, d.name),
+        time: fs.statSync(path.join(outputDir, d.name)).mtimeMs,
+      }))
+      .sort((a: any, b: any) => b.time - a.time);
+
+    if (dirs.length === 0) {
+      this.showMessage("PRJ301 created but folder not found.", true);
+      return;
+    }
+
+    await vscode.commands.executeCommand(
+      "vscode.openFolder",
+      vscode.Uri.file(dirs[0].path),
+      false,
+    );
+  }
+
   // PYTHON PROJECT GENERATOR
   private async _generatePythonProject(
     formData: any,

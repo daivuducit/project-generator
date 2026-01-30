@@ -154,7 +154,7 @@ function generateProject() {
     // Main class name is optional - no validation needed
   } else if (lang === "Java" && course === "PRJ301") {
     formData.course = "PRJ301";
-    formData.projectName = document.getElementById("prj301-project-name").value;
+    formData.project_name = document.getElementById("prj301-project-name").value;
     formData.author = document.getElementById("prj301-author").value;
     formData.github = document.getElementById("prj301-github").value;
     formData.server = document.getElementById("prj301-server").value;
@@ -163,10 +163,10 @@ function generateProject() {
     formData.database = document.getElementById("prj301-database").value;
     formData.mvc = document.getElementById("prj301-mvc").value;
     formData.jstl = document.getElementById("prj301-jstl").checked;
-    formData.mainClassName = document.getElementById("prj301-main-class").value;
+    formData.main_servlet_name = document.getElementById("prj301-main-class").value;
     formData.addSampleCode = true;
 
-    if (!formData.projectName.trim()) {
+    if (!formData.project_name.trim()) {
       showMessage("Project name is required", "error");
       return;
     }
