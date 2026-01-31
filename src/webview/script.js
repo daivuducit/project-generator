@@ -26,7 +26,15 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   });
+  // Auto-sync context_path with project_name for PRJ301
+  const prj301ProjectName = document.getElementById("prj301-project-name");
+  const prj301ContextPath = document.getElementById("prj301-context-path");
 
+  if (prj301ProjectName && prj301ContextPath) {
+    prj301ProjectName.addEventListener("input", (e) => {
+      prj301ContextPath.value = e.target.value;
+    });
+  }
   // Default selection
   selectLanguage("Java");
 });
@@ -140,6 +148,7 @@ function generateProject() {
     formData.projectName = document.getElementById("pro192-project-name").value;
     formData.author = document.getElementById("pro192-author").value;
     formData.github = document.getElementById("pro192-github").value;
+    formData.group_id = document.getElementById("pro192-group-id").value;
     formData.language = "Java";
     formData.buildSystem = document.getElementById("pro192-build").value;
     formData.javaVersion = document.getElementById("pro192-java-version").value;
@@ -154,16 +163,24 @@ function generateProject() {
     // Main class name is optional - no validation needed
   } else if (lang === "Java" && course === "PRJ301") {
     formData.course = "PRJ301";
-    formData.project_name = document.getElementById("prj301-project-name").value;
+    formData.project_name = document.getElementById(
+      "prj301-project-name",
+    ).value;
+    //author-git
     formData.author = document.getElementById("prj301-author").value;
     formData.github = document.getElementById("prj301-github").value;
+    formData.group_id = document.getElementById("prj301-group-id").value;
+    formData.context_path = document.getElementById(
+      "prj301-context-path",
+    ).value;
     formData.server = document.getElementById("prj301-server").value;
     formData.buildSystem = document.getElementById("prj301-build").value;
     formData.javaVersion = document.getElementById("prj301-java-version").value;
     formData.database = document.getElementById("prj301-database").value;
     formData.mvc = document.getElementById("prj301-mvc").value;
     formData.jstl = document.getElementById("prj301-jstl").checked;
-    formData.main_servlet_name = document.getElementById("prj301-main-class").value;
+    formData.main_servlet_name =
+      document.getElementById("prj301-main-class").value;
     formData.addSampleCode = true;
 
     if (!formData.project_name.trim()) {

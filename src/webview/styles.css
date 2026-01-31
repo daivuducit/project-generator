@@ -181,6 +181,14 @@ body {
   cursor: not-allowed;
 }
 
+.form-hint {
+  display: block;
+  font-size: 11px;
+  color: var(--vscode-descriptionForeground);
+  margin-top: 4px;
+  font-style: italic;
+}
+
 .location-input {
   display: flex;
   gap: 8px;

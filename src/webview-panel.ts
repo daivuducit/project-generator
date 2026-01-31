@@ -242,10 +242,9 @@ export class ProjectGeneratorPanel {
       return;
     }
 
-    // MAIN CLASS ĐỔI ĐƯỢC
     const inputs = {
       project_name: formData.projectName,
-      group_id: "com.mycompany",
+      group_id: formData.group_id || "com.mycompany",
 
       main_class: formData.mainClassName || "Main",
       main_class_name: formData.mainClassName || "Main",
@@ -307,10 +306,10 @@ export class ProjectGeneratorPanel {
     }
 
     const inputs = {
-      project_name: formData.projectName,
-      group_id: "com.mycompany",
-      main_servlet_name: formData.mainClassName || "MainServlet",
-      context_path: formData.projectName,
+      project_name: formData.project_name,
+      group_id: formData.group_id || "com.mycompany",
+      main_servlet_name: formData.main_servlet_name || "MainServlet",
+      context_path: formData.context_path || formData.project_name,
     };
 
     let command = `cookiecutter "${templatePath}" --no-input -o "${outputDir}"`;
