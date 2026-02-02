@@ -24,6 +24,11 @@
   "contributes": {
     "commands": [
       {
+        "command": "project-generator.openUI",
+        "title": "Project Generator: Open UI",
+        "icon": "$(rocket)"
+      },
+      {
         "command": "project-generator.newProject",
         "title": "Project Generator: New Project..."
       },
@@ -31,7 +36,49 @@
         "command": "project-generator.updateTemplates",
         "title": "Project Generator: Update Templates Storage"
       }
-    ]
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "project-generator-sidebar",
+          "title": "",
+          "icon": "resources/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "project-generator-sidebar": [
+        {
+          "id": "projectGeneratorView",
+          "name": "Generator",
+          "icon": "$(rocket)",
+          "contextualTitle": "Project Generator"
+        }
+      ]
+    },
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "project-generator.openUI"
+        },
+        {
+          "command": "project-generator.newProject"
+        }
+      ],
+      "explorer/context": [
+        {
+          "command": "project-generator.newProject",
+          "group": "navigation"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "project-generator.openUI",
+          "when": "view == projectGeneratorView",
+          "group": "navigation"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run package",
