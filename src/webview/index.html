@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Project Generator</title>
+    <link rel="stylesheet" href="{{cssUri}}" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>New Project</h1>
+      </div>
+
+      <div class="content">
+        <!-- Left Sidebar - Generators -->
+        <div class="sidebar">
+          <div class="section-title">New Project</div>
+          <div class="generator-list">
+            <div class="generator-item" data-lang="Java">
+              <span class="icon">☕</span>
+              <span>Java</span>
+            </div>
+            <div class="generator-item" data-lang="C">
+              <span class="icon">🔧</span>
+              <span>C</span>
+            </div>
+            <div class="generator-item" data-lang="Python">
+              <span class="icon">🐍</span>
+              <span>Python</span>
+            </div>
+          </div>
+
+          <div class="section-title" style="margin-top: 20px">Courses</div>
+          <div id="course-list" class="generator-list">
+            <!-- Courses will be populated here -->
+          </div>
+        </div>
+
+        <!-- Main Form Area -->
+        <div class="form-area">
+          <div id="message" class="message"></div>
+
+          <!-- C Form -->
+          <div id="c-form" class="form-container">
+            <h2>C Project - PRF192</h2>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Project Name</label>
+                <input
+                  type="text"
+                  id="c-project-name"
+                  class="form-control"
+                  value="c-project"
+                />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Author</label>
+                <input
+                  type="text"
+                  id="c-author"
+                  class="form-control"
+                  value="Your Name"
+                />
+              </div>
+              <div class="form-group">
+                <label>GitHub Username</label>
+                <input
+                  type="text"
+                  id="c-github"
+                  class="form-control"
+                  value="your-github"
+                />
+              </div>
+            </div>
+          </div>
+
+          <!-- Java Form - PRO192 -->
+          <div id="java-pro192-form" class="form-container">
+            <h2>Java Project - PRO192 (OOP Console)</h2>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Project Name</label>
+                <input
+                  type="text"
+                  id="pro192-project-name"
+                  class="form-control"
+                  value="my-project"
+                />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Author</label>
+                <input
+                  type="text"
+                  id="pro192-author"
+                  class="form-control"
+                  value="Your Name"
+                  placeholder="Your full name"
+                />
+              </div>
+              <div class="form-group">
+                <label>GitHub Username</label>
+                <input
+                  type="text"
+                  id="pro192-github"
+                  class="form-control"
+                  value="your-github"
+                  placeholder="your-github-username"
+                />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Main Class Name</label>
+                <input
+                  type="text"
+                  id="pro192-main-class"
+                  class="form-control"
+                  value=""
+                  placeholder="e.g., Main, App, Application"
+                />
+                <small class="form-hint"
+                  >Name for the main Java file (Main.java)</small
+                >
+              </div>
+              <div class="form-group">
+                <label>Group ID</label>
+                <input
+                  type="text"
+                  id="pro192-group-id"
+                  class="form-control"
+                  value="com.mycompany"
+                  placeholder="e.g., com.mycompany, org.example"
+                />
+                <small class="form-hint"
+                  >Package name for your Java project</small
+                >
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Build System</label>
+                <select id="pro192-build" class="form-control">
+                  <option value="Gradle - Groovy">Gradle - Groovy</option>
+                  <option value="Gradle - Kotlin">Gradle - Kotlin</option>
+                  <option value="Maven">Maven</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Java/JDK Version</label>
+                <select id="pro192-java-version" class="form-control">
+                  <option value="17">Java 17</option>
+                  <option value="21">Java 21</option>
+                  <option value="11">Java 11</option>
+                  <option value="8">Java 8</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Java Form - PRJ301 -->
+          <div id="java-prj301-form" class="form-container">
+            <h2>Java Web Project - PRJ301 (JSP/Servlet)</h2>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Project Name</label>
+                <input
+                  type="text"
+                  id="prj301-project-name"
+                  class="form-control"
+                  value="my-web-project"
+                />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Author</label>
+                <input
+                  type="text"
+                  id="prj301-author"
+                  class="form-control"
+                  value="Your Name"
+                  placeholder="Your full name"
+                />
+              </div>
+              <div class="form-group">
+                <label>GitHub Username</label>
+                <input
+                  type="text"
+                  id="prj301-github"
+                  class="form-control"
+                  value="your-github"
+                  placeholder="your-github-username"
+                />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Group ID</label>
+                <input
+                  type="text"
+                  id="prj301-group-id"
+                  class="form-control"
+                  value="com.mycompany"
+                  placeholder="e.g., com.mycompany, org.example"
+                />
+                <small class="form-hint"
+                  >Package name for your Java project</small
+                >
+              </div>
+              <div class="form-group">
+                <label>Context Path</label>
+                <input
+                  type="text"
+                  id="prj301-context-path"
+                  class="form-control"
+                  value="my-web-project"
+                  placeholder="e.g., myapp, web-project"
+                />
+                <small class="form-hint"
+                  >URL path for your web application</small
+                >
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Application Server</label>
+                <select id="prj301-server" class="form-control">
+                  <option value="Tomcat">Apache Tomcat</option>
+                  <option value="Glassfish">Glassfish</option>
+                  <option value="Wildfly">Wildfly</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Build System</label>
+                <select id="prj301-build" class="form-control">
+                  <option value="Maven">Maven</option>
+                  <option value="Gradle - Groovy">Gradle - Groovy</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Java/JDK Version</label>
+                <select id="prj301-java-version" class="form-control">
+                  <option value="17">Java 17</option>
+                  <option value="21">Java 21</option>
+                  <option value="11">Java 11</option>
+                  <option value="8">Java 8</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Database</label>
+                <select id="prj301-database" class="form-control">
+                  <option value="MySQL">MySQL</option>
+                  <option value="PostgreSQL">PostgreSQL</option>
+                  <option value="SQLServer">SQL Server</option>
+                  <option value="None">None</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Main Servlet Name</label>
+                <input
+                  type="text"
+                  id="prj301-main-class"
+                  class="form-control"
+                  value=""
+                  placeholder="e.g., NewServlet, MainServlet"
+                />
+                <small class="form-hint">Name for the main Servlet class</small>
+              </div>
+              <div class="form-group">
+                <label>MVC Pattern</label>
+                <select id="prj301-mvc" class="form-control">
+                  <option value="MVC2">MVC2 (Servlet + JSP)</option>
+                  <option value="MVC1">MVC1 (JSP Only)</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group full-width">
+                <label>
+                  <input type="checkbox" id="prj301-jstl" checked />
+                  Include JSTL Library
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Python Form -->
+          <div id="python-form" class="form-container">
+            <h2>Python Project - PFP191</h2>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Project Name</label>
+                <input
+                  type="text"
+                  id="python-project-name"
+                  class="form-control"
+                  value="my-python-project"
+                />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group full-width">
+                <label>Description</label>
+                <input
+                  type="text"
+                  id="python-description"
+                  class="form-control"
+                  value="A Python project"
+                />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Full Name</label>
+                <input
+                  type="text"
+                  id="python-full-name"
+                  class="form-control"
+                  value="Your Name"
+                />
+              </div>
+              <div class="form-group">
+                <label>GitHub Username</label>
+                <input
+                  type="text"
+                  id="python-github"
+                  class="form-control"
+                  value="your-github"
+                />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Python Version</label>
+                <input
+                  type="text"
+                  id="python-py-version"
+                  class="form-control"
+                  value="3.9"
+                />
+              </div>
+              <div class="form-group">
+                <label>License</label>
+                <select id="python-license" class="form-control">
+                  <option value="MIT">MIT</option>
+                  <option value="BSD-3">BSD-3</option>
+                  <option value="Proprietary">Proprietary</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Use Docker</label>
+                <select id="python-docker" class="form-control">
+                  <option value="y">Yes</option>
+                  <option value="n">No</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Footer Buttons -->
+          <div class="footer">
+            <button class="btn btn-secondary" onclick="closeWindow()">
+              Cancel
+            </button>
+            <button class="btn btn-primary" onclick="generateProject()">
+              Create
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="{{jsUri}}"></script>
+  </body>
+</html>
