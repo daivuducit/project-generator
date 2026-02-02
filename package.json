@@ -25,7 +25,7 @@
     "commands": [
       {
         "command": "project-generator.openUI",
-        "title": "Project Generator: Open UI",
+        "title": "FPTU: New Project",
         "icon": "$(rocket)"
       },
       {
@@ -41,7 +41,7 @@
       "activitybar": [
         {
           "id": "project-generator-sidebar",
-          "title": "",
+          "title": "Project Generator",
           "icon": "resources/icon.svg"
         }
       ]
