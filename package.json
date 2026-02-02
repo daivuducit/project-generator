@@ -42,6 +42,10 @@
         {
           "command": "project-generator.newProject",
           "group": "navigation"
+        },
+        {
+          "command": "project-generator.openUI",
+          "group": "navigation"
         }
       ]
     }
