@@ -6,10 +6,14 @@ import { existsSync } from "fs";
 import axios from "axios";
 import AdmZip = require("adm-zip");
 import { ProjectGeneratorPanel } from "./webview-panel";
+import {
+  registerReadmeViewer,
+  openProtectedReadme,
+} from "./normal/readmeViewer";
 
 export async function activate(context: vscode.ExtensionContext) {
   markSuccessfulGeneration();
-
+  registerReadmeViewer(context);
   const storagePath = context.globalStorageUri.fsPath;
   const templateFolder = path.join(storagePath, "project-template");
 
@@ -57,8 +61,28 @@ export async function activate(context: vscode.ExtensionContext) {
       await downloadTemplates(context);
     },
   );
+  vscode.workspace.getConfiguration("files").update(
+    "exclude",
+    {
+      "**/*.enc": true,
+    },
+    vscode.ConfigurationTarget.Workspace
+  );
 
-  context.subscriptions.push(openUI, newProject, updateTemplates);
+    const openReadmeCmd = vscode.commands.registerCommand(
+    "project-generator.openProtectedReadme",
+    async () => {
+      await openProtectedReadme();
+    },
+  );
+  if (vscode.workspace.workspaceFolders?.length) {
+    setTimeout(() => {
+      vscode.commands.executeCommand(
+        "project-generator.openProtectedReadme"
+      );
+    }, 500);
+  }
+  context.subscriptions.push(openUI, newProject, updateTemplates,openReadmeCmd);
 }
 // TreeView Provider cho sidebar
 class ProjectGeneratorTreeProvider implements vscode.TreeDataProvider<ProjectTreeItem> {

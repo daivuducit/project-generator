@@ -4,6 +4,7 @@ import * as fs from "fs";
 import { exec } from "child_process";
 import { promisify } from "util";
 import { ProjectGenerator } from "../types";
+import { encryptReadmeIfExists } from "../postProcess/encryptReadme";
 
 const execPromise = promisify(exec);
 
@@ -107,6 +108,14 @@ export class CGenerator implements ProjectGenerator {
             `github_username="${github}"`;
 
           await execPromise(command);
+
+          
+          console.log("[GEN] projectPath =", projectPath);
+
+          await encryptReadmeIfExists(projectPath);
+
+       
+
         },
       );
 
